@@ -54,7 +54,6 @@ class VJudgeCrawler(Crawler):
                                               str(datetime.datetime.fromtimestamp(submission['time'] // 1000)),
                                               self.verdict_standardize(submission['statusCanonical'])]
                 return_list.append(self.get_submission_data_dict(submission_data_dict_value))
-            print(start_index, len(json_data['data']))
             if len(json_data['data']) < 20:
                 is_finished = True
             else:

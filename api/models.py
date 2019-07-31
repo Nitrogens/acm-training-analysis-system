@@ -19,6 +19,15 @@ class Submission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
+class CodeforcesContest(models.Model):
+    name = models.CharField(max_length=256)
+    rank = models.IntegerField()
+    solved = models.IntegerField()
+    rating_change = models.IntegerField()
+    new_rating = models.IntegerField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
 class Comment(models.Model):
     target_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="target_user")
     author_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="author_user")

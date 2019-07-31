@@ -4,7 +4,8 @@ from crawler.HDOJCrawler import HDOJCrawler
 from crawler.POJCrawler import POJCrawler
 from crawler.VJudgeCrawler import VJudgeCrawler
 
-# codeforces = CodeforcesCrawler("nitrogens")
+codeforces = CodeforcesCrawler("touris")
+print(codeforces.get_user_contest_data())
 # codeforces_submission_data = codeforces.get_submission_data()
 # for submission in codeforces_submission_data:
 #     print(submission)
@@ -21,7 +22,7 @@ from crawler.VJudgeCrawler import VJudgeCrawler
 #     print(submission)
 
 
-vjudge = VJudgeCrawler("nitrogens")
-vjudge_submission_data = vjudge.get_submission_data()
-for submission in vjudge_submission_data:
-    print(submission)
+# vjudge = VJudgeCrawler("nitrogens")
+# vjudge_submission_data = vjudge.get_submission_data()
+# for submission in vjudge_submission_data:
+#     print(submission)
