@@ -23,19 +23,19 @@ class CodeforcesCrawler(Crawler):
         return self.rating
 
     def get_submission_data(self):
-        response = requests.get("https://codeforces.com/api/user.status?handle=%s" % self.username)
+        response = requests.get("https://codeforces.com/api/user.status?handle=%s" % self.username, headers=self.headers)
         json_data = json.loads(response.text)
         if json_data['status'] != 'OK':
-            return None
+            return []
         return_list = []
+        index = 1
         for submission in json_data['result']:
-            submission_dict = {
-                'oj_name': "CodeForces",
-                'problem_id': str(submission['contestId']) + submission['problem']['index'],
-                'username': self.username,
-                'time': str(datetime.datetime.fromtimestamp(submission['creationTimeSeconds'])),
-                'verdict': self.verdict_standardize(submission['verdict']),
-            }
-            return_list.append(submission_dict)
+            print("Fetching CodeForces submission data %d..." % index)
+            index += 1
+            submission_data_dict_value = ["CodeForces",
+                                          str(submission['contestId']) + submission['problem']['index'],
+                                          str(datetime.datetime.fromtimestamp(submission['creationTimeSeconds'])),
+                                          self.verdict_standardize(submission['verdict'])]
+            return_list.append(self.get_submission_data_dict(submission_data_dict_value))
         return return_list
 

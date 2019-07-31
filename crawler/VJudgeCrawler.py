@@ -39,19 +39,21 @@ class VJudgeCrawler(Crawler):
         start_index = 0
         return_list = []
 
+        index = 1
         while not is_finished:
             param['start'] = str(start_index)
             response = requests.post("https://vjudge.net/status/data/", data=param)
             json_data = json.loads(response.text)
             for submission in json_data['data']:
-                submission_dict = {
-                    'oj_name': submission['oj'],
-                    'problem_id': submission['probNum'],
-                    'username': self.username,
-                    'time': str(datetime.datetime.fromtimestamp(submission['time'] // 1000)),
-                    'verdict': self.verdict_standardize(submission['statusCanonical']),
-                }
-                return_list.append(submission_dict)
+                print("Fetching VJudge submission data %d..." % index)
+                index += 1
+                if submission['oj'] == 'Gym':
+                    submission['oj'] = 'CodeForces'
+                submission_data_dict_value = [submission['oj'],
+                                              submission['probNum'],
+                                              str(datetime.datetime.fromtimestamp(submission['time'] // 1000)),
+                                              self.verdict_standardize(submission['statusCanonical'])]
+                return_list.append(self.get_submission_data_dict(submission_data_dict_value))
             print(start_index, len(json_data['data']))
             if len(json_data['data']) < 20:
                 is_finished = True
