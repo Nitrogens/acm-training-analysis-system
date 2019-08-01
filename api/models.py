@@ -2,6 +2,7 @@ from django.db import models
 
 
 class User(models.Model):
+    id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=32, unique=True)
     password = models.CharField(max_length=256)
     nickname = models.CharField(max_length=32, unique=True)
@@ -29,8 +30,10 @@ class CodeforcesContest(models.Model):
 
 
 class Comment(models.Model):
+    id = models.AutoField(primary_key=True)
     target_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="target_user")
     author_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="author_user")
     create_time = models.DateTimeField()
     edit_time = models.DateTimeField()
     text = models.TextField()
+    parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)

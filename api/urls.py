@@ -6,6 +6,8 @@ urlpatterns = [
     path('db/codeforces/rating', db.CodeforcesRatingCrawAction.as_view()),
     path('db/codeforces/contest', db.UserCodeforcesContestCrawAction.as_view()),
     path('db/submission', db.UserSubmissionCrawAction.as_view()),
+    path('ajax/user', ajax.UserAction.as_view()),
+    path('ajax/comment', ajax.CommentAction.as_view()),
     path('ajax/submission', ajax.UserSubmissionGetAction.as_view()),
     path('ajax/oj_stat', ajax.UserOJStatisticGetAction.as_view()),
     path('ajax/verdict_stat', ajax.UserVerdictStatisticGetAction.as_view()),
