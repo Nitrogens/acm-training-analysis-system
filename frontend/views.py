@@ -12,8 +12,11 @@ def dashboard(request):
     return render(request, 'dashboard.html', locals())
 
 
-def ranklist_accepted(request):
-    return render(request, 'ranklist_accepted.html', locals())
+def ranklist_problem(request):
+    return render(request, 'ranklist_problem.html', locals())
+
+def ranklist_codeforces(request):
+    return render(request, 'ranklist_codeforces.html', locals())
 
 
 def submission(request):

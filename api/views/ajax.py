@@ -10,6 +10,7 @@ from django.http import JsonResponse, QueryDict
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
+from django.core.paginator import Paginator
 
 from ..models import *
 
@@ -233,29 +234,218 @@ class CommentAction(View):
         return JsonResponse({'message': 'OK'})
 
 
-class UserSubmissionGetAction(View):
+class SubmissionGetAction(View):
+    def get(self, request):
+        page_size = 15
+        page_id = 1
+        try:
+            param = {}
+            order_param = "time"
+            if request.GET.get('username') is not None:
+                param['user'] = User.objects.get(username=request.GET.get('username'))
+            if request.GET.get('verdict') is not None:
+                param['verdict'] = int(request.GET.get('verdict'))
+            if request.GET.get('order_by') is not None:
+                order_param = request.GET.get('order_by')
+            if request.GET.get('page_size') is not None:
+                page_size = int(request.GET.get('page_size'))
+            if request.GET.get('page_id') is not None:
+                page_id = int(request.GET.get('page_id'))
+            query_result = Submission.objects.filter(**param).order_by(order_param).reverse()
+            paginator = Paginator(query_result, page_size)
+            return_query_result = paginator.page(page_id)
+            has_previous = return_query_result.has_previous()
+            has_next = return_query_result.has_next()
+        except Exception as e:
+            print(e)
+            return JsonResponse({'message': 'Failed', 'data': []})
+
+        data_list = []
+        for record in return_query_result:
+            record_dict = {
+                'id': record.id,
+                'oj_name': record.oj_name,
+                'problem_id': record.problem_id,
+                'time': str(record.time),
+                'verdict': record.verdict,
+                'user': record.user.username,
+            }
+            data_list.append(record_dict)
+
+        return JsonResponse({'message': 'OK',
+                             'data': data_list,
+                             'has_previous': int(has_previous),
+                             'has_next': int(has_next),
+                             'num_pages': paginator.num_pages,
+                             })
+
+
+class UserRanklistGetAction(View):
+    def get(self, request):
+        page_size = 15
+        page_id = 1
+        try:
+            if request.GET.get('page_id') is not None:
+                page_id = int(request.GET.get('page_id'))
+            query_result = Submission.objects.filter(verdict=0).values('user__username').annotate(count=Count('id'))\
+                .order_by('count').reverse()
+            paginator = Paginator(query_result, page_size)
+            return_query_result = paginator.page(page_id)
+            has_previous = return_query_result.has_previous()
+            has_next = return_query_result.has_next()
+        except Exception as e:
+            print(e)
+            return JsonResponse({'message': 'Failed', 'data': []})
+
+        data_list = []
+        index = 0
+        for record in return_query_result:
+            record_dict = {
+                'rank': return_query_result.start_index() + index,
+                'username': record['user__username'],
+                'count': record['count'],
+            }
+            data_list.append(record_dict)
+            index += 1
+
+        return JsonResponse({'message': 'OK',
+                             'data': data_list,
+                             'has_previous': int(has_previous),
+                             'has_next': int(has_next),
+                             'num_pages': paginator.num_pages,
+                             })
+
+
+class UserCodeforcesRatingRanklistGetAction(View):
+    def get(self, request):
+        page_size = 15
+        page_id = 1
+        try:
+            if request.GET.get('page_id') is not None:
+                page_id = int(request.GET.get('page_id'))
+            query_result = User.objects.all().order_by('codeforces_rating').reverse()
+            paginator = Paginator(query_result, page_size)
+            return_query_result = paginator.page(page_id)
+            has_previous = return_query_result.has_previous()
+            has_next = return_query_result.has_next()
+        except Exception as e:
+            print(e)
+            return JsonResponse({'message': 'Failed', 'data': []})
+
+        data_list = []
+        index = 0
+        for record in return_query_result:
+            record_dict = {
+                'rank': return_query_result.start_index() + index,
+                'username': record.username,
+                'rating': int(record.codeforces_rating),
+            }
+            data_list.append(record_dict)
+            index += 1
+
+        return JsonResponse({'message': 'OK',
+                             'data': data_list,
+                             'has_previous': int(has_previous),
+                             'has_next': int(has_next),
+                             'num_pages': paginator.num_pages,
+                             })
+
+
+class UserCodeforcesContestGetAction(View):
     def get(self, request):
         username = request.GET.get('username')
         if username is None:
             return JsonResponse({'message': 'Failed', 'data': []})
 
         try:
-            query_result = Submission.objects.filter(user=User.objects.get(username=username)).order_by("time").reverse()
+            query_result = CodeforcesContest.objects.filter(user__username=username).order_by('contest_id')
         except Exception as e:
             print(e)
             return JsonResponse({'message': 'Failed', 'data': []})
 
         data_list = []
-        for record in query_result:
+        for contest in query_result:
             record_dict = {
-                'oj_name': record.oj_name,
-                'problem_id': record.problem_id,
-                'time': str(record.time),
-                'verdict': verdict_id_to_str(record.verdict),
+                'name': contest.name,
+                'rank': contest.rank,
+                'solved': contest.solved,
+                'rating_change': contest.rating_change,
+                'new_rating': contest.new_rating,
+                'contest_id': contest.contest_id,
             }
             data_list.append(record_dict)
 
         return JsonResponse({'message': 'OK', 'data': data_list})
+
+
+class MostPopularAcceptedProblemGetAction(View):
+    def get(self, request):
+        try:
+            query_result = Submission.objects.filter(verdict=0).order_by("oj_name", "problem_id").reverse().values("oj_name", "problem_id").annotate(count=Count("id")).order_by("count")
+            print(query_result.query)
+            paginator = Paginator(query_result, 8)
+            return_query_result = paginator.page(1)
+        except Exception as e:
+            print(e)
+            return JsonResponse({'message': 'Failed', 'data': []})
+
+        data_list = []
+        for record in return_query_result:
+            record_dict = {
+                'oj_name': record['oj_name'],
+                'problem_id': record['problem_id'],
+                'count': int(record['count']),
+            }
+            data_list.append(record_dict)
+
+        return JsonResponse({'message': 'OK', 'data': data_list})
+
+
+class SubmissionStatisticAction(View):
+    def get(self, request):
+        try:
+            submission_today = Submission.objects.filter(time__day=datetime.datetime.now().day, time__month=datetime.datetime.now().month, time__year=datetime.datetime.now().year).count()
+            accepted_submission_today = Submission.objects.filter(time__day=datetime.datetime.now().day, time__month=datetime.datetime.now().month, time__year=datetime.datetime.now().year, verdict=0).count()
+            submission_total = Submission.objects.all().count()
+            accepted_submission_total = Submission.objects.filter(verdict=0).count()
+        except Exception as e:
+            print(e)
+            return JsonResponse({'message': 'Failed', 'data': []})
+
+        data_dict = {
+            'submission_today': submission_today,
+            'accepted_submission_today': accepted_submission_today,
+            'submission_total': submission_total,
+            'accepted_submission_total': accepted_submission_total,
+        }
+
+        return JsonResponse({'message': 'OK', 'data': data_dict})
+
+
+class UserStatisticAction(View):
+    def get(self, request):
+        username = request.GET.get('username')
+        if username is None:
+            return JsonResponse({'message': 'Failed', 'data': []})
+
+        try:
+            accepted_submission_total = Submission.objects.filter(verdict=0, user__username=username).count()
+            codeforces_rating = User.objects.get(username=username).codeforces_rating
+            problem_rank = Submission.objects.filter(verdict=0).values('user__username').annotate(count=Count('id'))\
+                .filter(count__gt=accepted_submission_total).count() + 1
+            codeforces_rating_rank = User.objects.filter(codeforces_rating__gt=codeforces_rating).count() + 1
+        except Exception as e:
+            print(e)
+            return JsonResponse({'message': 'Failed', 'data': []})
+
+        data_dict = {
+            'accepted_submission_total': accepted_submission_total,
+            'codeforces_rating': codeforces_rating,
+            'problem_rank': problem_rank,
+            'codeforces_rating_rank': codeforces_rating_rank,
+        }
+
+        return JsonResponse({'message': 'OK', 'data': data_dict})
 
 
 class UserOJStatisticGetAction(View):
@@ -266,7 +456,7 @@ class UserOJStatisticGetAction(View):
 
         try:
             query_result = Submission.objects.filter(user=User.objects.get(username=username), verdict=0)\
-                .order_by('oj_name', 'problem_id').values('oj_name', 'problem_id').distinct()
+                .order_by('oj_name', 'problem_id').values('oj_name', 'problem_id')
         except Exception as e:
             print(e)
             return JsonResponse({'message': 'Failed', 'data': []})
@@ -312,7 +502,7 @@ class UserVerdictStatisticGetAction(View):
         data_list = []
         for key, value in verdict_count.items():
             record_dict = {
-                'verdict_name': verdict_id_to_str(key),
+                'verdict_id': int(key),
                 'verdict_count': value,
             }
             data_list.append(record_dict)
@@ -327,9 +517,10 @@ class UserMonthlyStatisticGetAction(View):
             return JsonResponse({'message': 'Failed', 'data': []})
 
         try:
-            query_result = Submission.objects.filter(user=User.objects.get(username=username), verdict=0)\
+            query_result = Submission.objects.filter(user__username=username, verdict=0)\
                     .annotate(year=ExtractYear('time'), month=ExtractMonth('time')).values('year', 'month')\
                     .annotate(num=Count('id'))
+            print(query_result.query)
         except Exception as e:
             print(e)
             return JsonResponse({'message': 'Failed', 'data': []})
@@ -341,5 +532,9 @@ class UserMonthlyStatisticGetAction(View):
                 'count': int(element['num']),
             }
             data_list.append(record_dict)
+
+        data_list.reverse()
+        data_list = data_list[0:6]
+        data_list.reverse()
 
         return JsonResponse({'message': 'OK', 'data': data_list})

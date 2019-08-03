@@ -3,15 +3,20 @@
 {% block container %}
     <div class="container page-content">
         <div class="row">
-            <div class="col-lg">
-                <table class="table table-striped submission-list">
+            <div class="page-sidebar col-lg-3">
+
+                <div class="list-group">
+                    <a href="/ranklist" class="list-group-item list-group-item-action active"><span class="page-sidebar-list-content"><i class="fas fa-cube"></i>刷题量</span></a>
+                    <a href="/ranklist/codeforces" class="list-group-item list-group-item-action"><span class="page-sidebar-list-content"><i class="fas fa-tags"></i>Codeforces Rating</span></span></a>
+                    </div>
+            </div>
+            <div class="col-lg-9">
+                <table class="table table-striped">
                   <thead>
                     <tr>
-                      <th scope="col">序号</th>
-                      <th scope="col">用户</th>
-                      <th scope="col">提交时间</th>
-                      <th scope="col">题目</th>
-                      <th scope="col">评测状态</th>
+                      <th scope="col">排名</th>
+                      <th scope="col">用户名</th>
+                      <th scope="col">刷题量</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -33,5 +38,5 @@
     </div>
 {% endblock %}
 {% block extra_js %}
-    <script src="{% static 'js/ajax/submission.js' %}"></script>
+    <script src="{% static 'js/ajax/ranklist_problem.js' %}"></script>
 {% endblock %}

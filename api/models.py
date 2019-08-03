@@ -13,6 +13,7 @@ class User(models.Model):
 
 
 class Submission(models.Model):
+    id = models.AutoField(primary_key=True)
     oj_name = models.CharField(max_length=32)
     problem_id = models.CharField(max_length=128)
     time = models.DateTimeField()
@@ -26,6 +27,7 @@ class CodeforcesContest(models.Model):
     solved = models.IntegerField()
     rating_change = models.IntegerField()
     new_rating = models.IntegerField()
+    contest_id = models.IntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 

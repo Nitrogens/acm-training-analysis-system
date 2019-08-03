@@ -71,6 +71,7 @@ body {
 
 .problem-id {
     font-size: 16px;
+    font-weight: bold;
 }
 
 .submission-list .badge {
@@ -160,13 +161,13 @@ body {
 }
 
 #chart-status, #chart-oj {
-    width: 400px;
-    height: 400px;
+    width: 500px;
+    height: 500px;
 }
 
 #chart-codeforces, #chart-monthly {
-    width: 900px;
-    height: 300px;
+    width: 1000px;
+    height: 400px;
 }
 
 .footer {

@@ -53,6 +53,7 @@ class CodeforcesCrawler(Crawler):
                 'solved': int(column_data_list[3].text),
                 'rating_change': int(column_data_list[4].text),
                 'new_rating': int(column_data_list[5].text),
+                'contest_id': int(column_data_list[0].text),
             }
             return_list.append(contest_data_dict)
         return return_list
