@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block container %}
+    <div class="container page-content">
+        <div class="row">
+            <div class="page-sidebar col-lg-3">
+                <div class="list-group">
+                    <a href="/setting" class="list-group-item list-group-item-action"><span class="page-sidebar-list-content"><i class="fas fa-cube"></i>个人信息修改</span></a>
+                    <a href="/setting/password" class="list-group-item list-group-item-action"><span class="page-sidebar-list-content"><i class="fas fa-key"></i>密码修改</span></a>
+                    <a href="/setting/delete" class="list-group-item list-group-item-action active"><span class="page-sidebar-list-content"><i class="fas fa-user-times"></i>账号删除</span></a>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="alert alert-primary" role="alert">
+                    <span class="h4"><i class="fas fa-user-times"></i> 账号删除</span>
+                </div>
+                <div>您确定要删除账号吗？一经删除不可恢复！</div>
+                <button class="btn btn-danger" id="submit">删除</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block extra_js %}
+    <script src="{% static 'js/ajax/delete.js' %}"></script>
+{% endblock %}

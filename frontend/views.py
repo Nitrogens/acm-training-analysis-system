@@ -37,6 +37,13 @@ def password_change_view(request):
     return render(request, 'password.html', locals())
 
 
+def user_delete_view(request):
+    if request.session.get('is_login') is None:
+        return HttpResponseRedirect(reverse('frontend:index', args=()))
+
+    return render(request, 'user_delete.html', locals())
+
+
 def dashboard(request):
     return render(request, 'dashboard.html', locals())
 
