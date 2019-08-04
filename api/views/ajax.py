@@ -73,9 +73,9 @@ class UserAction(View):
             new_user.password = password_encrypt(request.POST.get('password'))
             new_user.nickname = request.POST.get('nickname')
             new_user.email = request.POST.get('email')
-            new_user.group = int(request.POST.get('group'))
+            new_user.group = 1
             new_user.oj_username = request.POST.get('oj_username')
-            new_user.codeforces_rating = int(request.POST.get('codeforces_rating'))
+            new_user.codeforces_rating = 0
             new_user.save()
         except Exception as e:
             print(e)
@@ -85,7 +85,7 @@ class UserAction(View):
     def put(self, request):
         PUT = QueryDict(request.body)
         username = PUT.get('username')
-        if username is None:
+        if username is None or username != request.session.get('username'):
             return JsonResponse({'message': 'Failed'})
 
         try:

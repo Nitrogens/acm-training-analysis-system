@@ -17,23 +17,17 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
+                    <li class="nav-item" id="index">
                         <a class="nav-link" href="/">首页</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" id="ranklist">
                         <a class="nav-link" href="/ranklist">用户排行榜</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" id="submission">
                         <a class="nav-link" href="/submission">提交记录</a>
                     </li>
                 </ul>
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login">登录</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/register">注册</a>
-                    </li>
+                <ul class="navbar-nav ml-auto" id="navbar-right">
                 </ul>
             </div>
         </div>
@@ -51,6 +45,7 @@
     <script src="{% static 'js/jquery.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/echarts.min.js' %}"></script>
+    <script src="{% static 'js/ajax/common.js' %}"></script>
 
     {% block extra_js %}
     {% endblock %}

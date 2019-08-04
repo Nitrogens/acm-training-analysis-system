@@ -1,11 +1,14 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import db, ajax
+from .views import db, ajax, authorization
 
 urlpatterns = [
     path('db/codeforces/rating/', db.CodeforcesRatingCrawAction.as_view()),
     path('db/codeforces/contest/', db.UserCodeforcesContestCrawAction.as_view()),
     path('db/submission/', db.UserSubmissionCrawAction.as_view()),
+    path('login/', authorization.UserLoginAction.as_view()),
+    path('logout/', authorization.UserLogoutAction.as_view()),
+    path('password/', authorization.UserPasswordChangeAction.as_view()),
     path('user/', ajax.UserAction.as_view()),
     path('comment/', ajax.CommentAction.as_view()),
     path('submission/', ajax.SubmissionGetAction.as_view()),

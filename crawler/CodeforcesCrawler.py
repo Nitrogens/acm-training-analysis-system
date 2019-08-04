@@ -27,6 +27,8 @@ class CodeforcesCrawler(Crawler):
         return_list = []
         index = 1
         for submission in json_data['result']:
+            if submission.get('contestId') is None:
+                continue
             print("Fetching CodeForces submission data %d..." % index)
             index += 1
             submission_data_dict_value = ["CodeForces",
